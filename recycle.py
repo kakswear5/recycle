@@ -11,7 +11,7 @@ CENTER_Y = HEIGHT/2
 
 CENTER = (CENTER_X,CENTER_Y)
 
-FINAL_LEVEL = 7
+FINAL_LEVEL = 20
 
 START_SPEED = 10 
 
@@ -27,22 +27,30 @@ current_level=1
 items=[]
 animations=[]
 
+
+
 def draw():
     global game_over,game_complete,current_level,items
     screen.clear()
     screen.blit("bgimg",(0,0))
 
-    if game_over():
+    if game_over:
         screen.draw.text("Game Over",fontsize=60,center = CENTER, color="black")
         screen.draw.text("Try Again",fontsize=40,center = (CENTER_X, CENTER_Y+30),color="black")
     
-    elif game_complete():
+    elif game_complete:
         screen.draw.text("Good Job ",fontsize=65,center = CENTER,color="black")
         screen.draw.text("You Did Well",fontsize=60,center = (CENTER_X, CENTER_Y+35),color="black")
 
     else:
         for item in items:
-            item.draw()    
+            item.draw() 
+            
+def update():
+    global items 
+    if len(items) ==0:
+        items=make_items(current_level)
+        
 
 def make_items(number_of_extra_items):
     items_to_create = get_option_to_create (number_of_extra_items)
@@ -70,6 +78,7 @@ def create_items (items_to_create):
  
 def layout_items (items_to_layout):
     number_of_gaps= len(items_to_layout)+1
+    random.shuffle(items_to_layout)
     gap_size = WIDTH/number_of_gaps
     for i , item in enumerate(items_to_layout):
         new_x_pos = (i + 1) * gap_size  
@@ -100,9 +109,9 @@ def on_mouse_down(pos):
 
 def handle_game_complete():
     global items,animations,current_level,game_complete
-    stop_animations
+    stop_animations(animations)
     if current_level == FINAL_LEVEL:
-       handle_game_complete()
+       game_complete= True
     else:
         current_level = current_level + 1
         items = []
